@@ -63,7 +63,24 @@ class SimulationService
             $gd = $gf - $ga;
             $points = $won * 3 + $drawn;
 
-            $performanceScore = $points + ($team->power / 10);
+
+            $totalPoints = Team::max('points') ?: 1;
+            $totalGoalDifference = Team::max('gd') ?: 1;
+
+            $pointsShare = $points ? $points / $totalPoints : 0;
+            $wonGamesShare = count($playedGames) ? $won / count($playedGames) : 0;
+            $goalDifferenceShare = $gd ? $gd / $totalGoalDifference : 0;
+
+
+            $performanceScore = ($pointsShare * 0.5) + ($wonGamesShare * 0.3) + ($goalDifferenceShare * 0.2);
+
+
+            $performanceScore = max(0, min(1, $performanceScore));
+
+            $probability = $performanceScore * 100;
+
+            $performanceScore = round($probability, 2);
+
 
             $team->update([
                 'won'            => $won,
