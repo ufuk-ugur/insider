@@ -15,6 +15,8 @@ class SimulationController extends Controller
     {
         $week = $request->get('week');
 
+        $maxWeek = Game::max('week');
+
         $games = Game::with(['homeTeam', 'awayTeam'])
             ->where('is_played', false)
             ->when($week, function ($query) use ($week) {
@@ -24,7 +26,7 @@ class SimulationController extends Controller
 
         $simulationService->simulateGames($games);
 
-        $week ??= Game::max('week');
+        $week ??= $maxWeek;
 
         $games = Game::with(['homeTeam', 'awayTeam'])
             ->where('week', $week)
@@ -33,9 +35,10 @@ class SimulationController extends Controller
         $board = Team::orderBy('points', 'desc')->orderBy('gd', 'desc')->get();
 
         return Inertia::render('Simulation', [
-            'board' => $board,
-            'games' => $games,
-            'week'  => $week,
+            'board'   => $board,
+            'games'   => $games,
+            'week'    => $week,
+            'maxWeek' => $maxWeek,
         ]);
     }
 }

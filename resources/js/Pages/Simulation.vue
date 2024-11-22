@@ -5,6 +5,7 @@ defineProps({
     board: Object,
     games: Object,
     week: Number,
+    maxWeek: Number,
 })
 </script>
 
@@ -110,6 +111,7 @@ defineProps({
                 href="/simulation"
                 method="post"
                 :data="{ week: week + 1 }"
+                v-if="maxWeek > week"
             >
                 Play Next Week
             </Link>
